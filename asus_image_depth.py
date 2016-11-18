@@ -44,8 +44,8 @@ class RedDepthNode(object):
         """ Construct the red-pixel finder node."""
         rospy.init_node('red_depth_node')
         self.cv_bridge = CvBridge()
-        self.image_arrays = np.empty( (1, 640, 480) )
-        self.depth_arrays = np.empty( (1, 640, 480) )
+        self.image_arrays = np.empty( (1, 480, 640,3) )
+        self.depth_arrays = np.empty( (1, 480, 640) )
 
         # Unfortunately the depth data and image data from the kinect aren't
         # perfectly time-synchronized.  The code below handles this issue.
@@ -58,13 +58,11 @@ class RedDepthNode(object):
 
         self.kinect_synch.registerCallback(self.image_points_callback)
 
-		self.images = something
-		self.depth_data = something
 
         rospy.spin()
 
 		# code for saving images and depth data using numpy.savez_compressed
-        np.savez_compressed('image_depth_data',  self.image_arrays, self.depth_arrays)
+        np.savez_compressed('image_depth_data',  self.image_arrays[1:,:,:,:], self.depth_arrays[1:,:,:])
 
     def image_points_callback(self, img, depth):
         """ Handle image/point_cloud callbacks. """
@@ -72,9 +70,9 @@ class RedDepthNode(object):
         # Convert the image message to a cv image object
         
         rgb_img = self.cv_bridge.imgmsg_to_cv2(img, "bgr8")
-        np.append(self.image_arrays, np.resize(rgb_image, (1, 640, 480) )
-        depth_img = self.cv_bridge.imgmsg_to_cv2(depth)
-        np.append(self.depth_arrays, np.resize(depth_img, (1, 640, 480) )
+        self.image_arrays = np.append(self.image_arrays, np.resize(rgb_img, (1, 480, 640,3)), axis=0)
+	depth_img = self.cv_bridge.imgmsg_to_cv2(depth)
+        self.depth_arrays = np.append(self.depth_arrays, np.resize(depth_img, (1, 480, 640)), axis=0)
 
         print depth_img.shape, rgb_img.shape
 
@@ -83,4 +81,4 @@ class RedDepthNode(object):
 
 
 if __name__ == "__main__":
-    r = RedDepthNode()
+	r = RedDepthNode()
