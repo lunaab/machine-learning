@@ -1,0 +1,9 @@
+#This is a tutorial to develop a neural network in python.
+#To do this tutorial, tensorflow and keras need to be installed. 
+#This can be done on the lab machines with the following commands:
+#    pip install tensorflow
+#    pip instal keras
+#
+# NJ
+
+http://machinelearningmastery.com/tutorial-first-neural-network-python-keras/
