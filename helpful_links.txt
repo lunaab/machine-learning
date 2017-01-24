@@ -7,3 +7,11 @@
 # NJ
 
 http://machinelearningmastery.com/tutorial-first-neural-network-python-keras/
+
+#These papers are pretty close to what we are aiming for. 
+#Reading through them is slow but helpful.
+#
+
+https://arxiv.org/abs/1406.2283
+https://arxiv.org/abs/1411.4734
+https://arxiv.org/abs/1502.07411
