@@ -36,24 +36,6 @@ for d in range(depths.shape[0]):
 #here the model architecture is defined
 #using TS for background so depth data has to be ordered ()
 model = Sequential()
-"""
-model.add(Convolution2D(96,11,11,activation='relu',input_shape=(320, 240,3),dim_ordering='tf'))
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Convolution2D(256,5,5,activation='relu',dim_ordering='tf'))#,input_shape=(40,30,3)
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Convolution2D(384,3,3,activation='relu',dim_ordering='tf'))#,input_shape=(20,15,3)
-model.add(Convolution2D(384,3,3,activation='relu',dim_ordering='tf'))#,input_shape=(20,15,3)
-model.add(Convolution2D(384,3,3,activation='relu',dim_ordering='tf'))#,input_shape=(20,15,3)
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Dense(256, init='uniform', activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Dense(4096, init='uniform', activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2)))
-#model.add(Dense(80*60, init='uniform', activation='relu'))
-#model.add(Flatten())
-
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics = ['accuracy'])
-"""
 
 # Coarse 1
 model.add(Convolution2D(96,11,11,activation='relu',input_shape=(320, 240,3),dim_ordering='tf',
@@ -81,7 +63,7 @@ model.add(Dense(4096, init='uniform', activation='relu'))
 
 model.add(Dense(80*60, init='uniform', activation='linear'))
 
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics = ['accuracy'])
+model.compile(loss='mean_squared_error', optimizer='adam', metrics = ['accuracy'])
 model.fit(image_dest, depth_dest, nb_epoch=10, batch_size=100, validation_split=0.2)
 
 scores = model.evaluate(image_dest, depth_dest)
