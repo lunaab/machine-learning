@@ -41,6 +41,11 @@ else:
         depth_resize[d,...] = np.resize(depths[d,:,:,:], (80,60,1))
         depth_dest[d,...] = depth_resize[d].flatten()
 
+    #save the image and depth data as arrays so that the next run is quicker
+    np.save('ny_image', image_dest)
+    np.save('ny_depth', depth_dest)
+
+
 #here the model architecture is defined
 #using TS for background so depth data has to be ordered (width, heighth, depth)
 model = Sequential()
