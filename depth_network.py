@@ -8,36 +8,41 @@ import numpy as np
 import cv2
 import scipy.misc as sci
 import h5py as h
+import os.path
 
-#import data from dataset here
+if os.path.isfile('ny_image.npy') and os.path.isfile('ny_depth.npy'):
+    image_dest = np.load('ny_image.npy')
+    depth_dest = np.load('ny_depth.npy')
+else:
+    #import data from dataset here
+    data = h.File("../image_data/nyu_depth_v2_labeled.mat")
+    variables = data.items()
 
-data = h.File("../image_data/nyu_depth_v2_labeled.mat")
-variables = data.items()
+    #extract data from the Dataset .mat
+    images = data.get('images')
+    depths  = data.get('depths')
 
-#extract data from the Dataset .mat
-images = data.get('images')
-depths  = data.get('depths')
+    image_dest = np.empty((images.shape[0], 320, 240, 3))
+    depth_resize = np.empty((depths.shape[0], 80, 60, 1))
+    depth_dest = np.empty((depths.shape[0], 80*60))
 
-image_dest = np.empty((images.shape[0], 320, 240, 3))
-depth_resize = np.empty((depths.shape[0], 80, 60, 1))
-depth_dest = np.empty((depths.shape[0], 80*60))
 
-depths = np.expand_dims(depths, axis=3)
-images = np.swapaxes(np.swapaxes(images, 1,3), 1,2)
+    depths = np.expand_dims(depths, axis=3)
+    images = np.swapaxes(np.swapaxes(images, 1,3), 1,2)
 
-#Resize the data to fit the desired input shape (None, 320, 240, 3)
-for i in range(images.shape[0]):
-    image_dest[i,...] = sci.imresize(images[i,:,:,:], (320,240,3))
+    #Resize the data to fit the desired input shape (None, 320, 240, 3)
+    for i in range(images.shape[0]):
+        image_dest[i,...] = sci.imresize(images[i,:,:,:], (320,240,3))
 
-#Normalize the image data by the maximum pixel size
-image_dest = image_dest/255
+    #Normalize the image data by the maximum pixel size
+    image_dest = image_dest/255
 
-for d in range(depths.shape[0]):
-    depth_resize[d,...] = np.resize(depths[d,:,:,:], (80,60,1))
-    depth_dest[d,...] = depth_resize[d].flatten()
+    for d in range(depths.shape[0]):
+        depth_resize[d,...] = np.resize(depths[d,:,:,:], (80,60,1))
+        depth_dest[d,...] = depth_resize[d].flatten()
 
 #here the model architecture is defined
-#using TS for background so depth data has to be ordered ()
+#using TS for background so depth data has to be ordered (width, heighth, depth)
 model = Sequential()
 
 # Coarse 1
@@ -54,7 +59,7 @@ model.add(Convolution2D(384,3,3,activation='relu',dim_ordering='tf'))#,input_sha
 model.add(Convolution2D(384,3,3,activation='relu',dim_ordering='tf'))#,input_shape=(20,15,3)
 
 
-#Coarse 5 (?? max pooling? Really?)
+#Coarse 5
 model.add(Convolution2D(256,3,3,activation='relu',dim_ordering='tf'))#,input_shape=(20,15,3)
 model.add(MaxPooling2D(pool_size=(2,2)))
 
@@ -66,8 +71,16 @@ model.add(Dense(4096, init='uniform', activation='relu'))
 
 model.add(Dense(80*60, init='uniform', activation='linear'))
 
+#compile the model
 model.compile(loss='mean_squared_error', optimizer='RMSprop', metrics = ['accuracy'])
-model.fit(image_dest, depth_dest, nb_epoch=10, batch_size=100, validation_split=0.2)
 
+#fit the model to matching depth data
+model.fit(image_dest, depth_dest, nb_epoch=100, batch_size=128, validation_split=0.2)
+
+#evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)
 print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+
+
+
+
