@@ -63,7 +63,6 @@ model.add(MaxPooling2D(pool_size=(2,2)))
 model.add(Convolution2D(384,3,3,activation='relu',dim_ordering='tf'))#,input_shape=(20,15,3)
 model.add(Convolution2D(384,3,3,activation='relu',dim_ordering='tf'))#,input_shape=(20,15,3)
 
-
 #Coarse 5
 model.add(Convolution2D(256,3,3,activation='relu',dim_ordering='tf'))#,input_shape=(20,15,3)
 model.add(MaxPooling2D(pool_size=(2,2)))
@@ -72,7 +71,6 @@ model.add(MaxPooling2D(pool_size=(2,2)))
 model.add(Flatten())
 model.add(Dense(4096, init='uniform', activation='relu'))
 #model.add(Dense(80*60, init='uniform', activation='relu'))
-
 
 model.add(Dense(80*60, init='uniform', activation='linear'))
 
@@ -85,7 +83,5 @@ model.fit(image_dest, depth_dest, nb_epoch=100, batch_size=128, validation_split
 #evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)
 print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
-
-
 
 
