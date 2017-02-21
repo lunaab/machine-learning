@@ -21,7 +21,7 @@ images = np.swapaxes(np.swapaxes(images, 1,3), 1,2)
 
 #Resize the data to fit the desired input shape (None, 320, 240, 3)
 for i in range(images.shape[0]):
-    image_dest[i,...] = sci.imresize(images[i,:,:,:], (320,240,3))
+    image_dest[i,...] = np.resize(images[i,:,:,:], (320,240,3))
 
 #Normalize the image data by the maximum pixel size
 image_dest = image_dest/255
