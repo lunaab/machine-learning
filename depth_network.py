@@ -88,5 +88,5 @@ depth_pre = model.predict(np.array(image_dest[-1,:,:,:]).reshape((1,320,240,3)),
 
 depth_image = depth_pre.reshape((80,60, 1))
 
-cv2.imwrite('depth_actual.jpg',depth_dest[-1].reshape((80,60, 1)))
-cv2.imwrite('depth_predict.jpg', depth_image)
+cv2.imwrite('depth_actual.jpg',depth_dest[-1].reshape((80,60, 1))*255)
+cv2.imwrite('depth_predict.jpg', depth_image*255)
