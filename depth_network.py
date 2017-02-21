@@ -1,4 +1,5 @@
 from keras.models import Sequential
+from keras.models import model_from_yaml
 from keras.layers import Dense
 from keras.layers import Convolution2D
 from keras.layers.pooling import MaxPooling2D
@@ -84,9 +85,21 @@ model.fit(image_dest, depth_dest, nb_epoch=10, batch_size=128, validation_split=
 scores = model.evaluate(image_dest, depth_dest)
 print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
+"""
 depth_pre = model.predict(np.array(image_dest[-1,:,:,:]).reshape((1,320,240,3)), batch_size=1, verbose=1)
 
 depth_image = depth_pre.reshape((80,60, 1))
 
-cv2.imwrite('depth_actual.jpg',depth_dest[-1].reshape((80,60, 1))*255)
-cv2.imwrite('depth_predict.jpg', depth_image*255)
+
+
+
+cv2.imshow('depth',depth_dest[-1].reshape((80,60, 1)))
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+cv2.imwrite('depth_actual.jpg',(depth_dest[-1].reshape((80,60, 1))/5)*255)
+cv2.imwrite('depth_predict.jpg', cv2.applyColorMap((depth_image/5)*255, cv2.COLORMAP_JET))
+cv2.imwrite('actual_image.jpg',image_dest[-1]*255)
+"""
+model.save("depth_net.h5")
