@@ -78,7 +78,7 @@ model.add(Dense(80*60, init='uniform', activation='linear'))
 model.compile(loss='mean_squared_error', optimizer='RMSprop', metrics = ['accuracy'])
 
 #fit the model to matching depth data
-model.fit(image_dest, depth_dest, nb_epoch=2, batch_size=128, validation_split=0.2)
+model.fit(image_dest, depth_dest, nb_epoch=10, batch_size=128, validation_split=0.2)
 
 #evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)
@@ -86,6 +86,7 @@ print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 depth_pre = model.predict(np.array(image_dest[-1,:,:,:]).reshape((1,320,240,3)), batch_size=1, verbose=1)
 
-depth_image = depth_pre.reshape((1,80,60, 1))
+depth_image = depth_pre.reshape((80,60, 1))
 
-cv2.imwrite('depth_predict.jpg', depth_image);
+cv2.imwrite('depth_actual.jpg',depth_dest[-1].reshape((80,60, 1)))
+cv2.imwrite('depth_predict.jpg', depth_image)
