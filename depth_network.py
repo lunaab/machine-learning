@@ -27,7 +27,7 @@ else:
     depths  = data.get('depths')
 
     image_dest = np.empty((images.shape[0], 320, 240, 3))
-    depth_resize = np.empty((depths.shape[0], 80, 60, 1))
+    depth_resize = np.empty((depths.shape[0], 80, 60))
     depth_dest = np.empty((depths.shape[0], 80*60))
 
 
@@ -42,7 +42,7 @@ else:
     image_dest = image_dest/255
 
     for d in range(depths.shape[0]):
-        depth_resize[d,...] = np.resize(depths[d,:,:,:], (80,60,1))
+        depth_resize[d,...] = sci.imresize(depths[d,:,:,:], (80,60), mode="F")
         depth_dest[d,...] = depth_resize[d].flatten()
 
     #save the image and depth data as arrays so that the next run is quicker
@@ -82,7 +82,7 @@ model.add(Dense(80*60, init='uniform', activation='linear'))
 model.compile(loss='mean_squared_error', optimizer='RMSprop', metrics = ['accuracy'])
 
 #fit the model to matching depth data
-model.fit(image_dest, depth_dest, nb_epoch=50, batch_size=256, validation_split=0.2)
+model.fit(image_dest, depth_dest, nb_epoch=30, batch_size=256, validation_split=0.2)
 
 #evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)

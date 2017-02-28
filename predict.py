@@ -6,6 +6,7 @@ import cv2
 import scipy.misc as sci
 import h5py as h
 import os.path
+import time
 
 model = load_model("depth_net.h5")
 
@@ -15,19 +16,28 @@ print "Model has been loaded\n"
 image_dest = np.load('ny_image.npy')
 depth_dest = np.load('ny_depth.npy')
 
+start = time.clock()
 depth_pre = model.predict(np.array(image_dest[-1,:,:,:]).reshape((1,320,240,3)), batch_size=1, verbose=1)
+stop = time.clock() - start
+
+print "*******Time Elapsed*********\n", stop
+
 
 print depth_pre
-print "\n*****Normalized For visualization*****\n", ((depth_pre/max(max(depth_pre)))*255).shape
-print "\n*****Actual*****\n", depth_dest[-1]
+#print "\n*****Normalized For visualization*****\n", depth_dest[-1]
+#print "\n*****Actual*****\n", depth_dest[-1]
 print "\n*****MaxError*****\n:", max(max(abs(depth_pre-depth_dest[-1])))
 
 depth_pre = ((depth_pre/max(max(depth_pre)))*255)
 depth_pre = np.resize(depth_pre,(80,60))
-
+depth_act = depth_dest[-1,:]
+depth_act = ((depth_act/max(depth_act))*255)
+depth_act = np.resize(depth_act,(80,60))
 print "\n*****Reshaped********\n", depth_pre
 
-sci.imsave('predict_depth.jpg', depth_pre)
+sci.imsave('images/predict_depth.jpg', depth_pre)
+sci.imsave('images/actual_depth.jpg', depth_act)
+#sci.imsave('last_image.jpg', image_dest[-1,:,:,:])
 
 """
 def depth_to_pixel(depths):
