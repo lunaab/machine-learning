@@ -37,10 +37,15 @@ print "\n*****MaxError*****\n:", max(max(abs(depth_pre-depth_dest[-1])))
 
 depth_pre = ((depth_pre/max(max(depth_pre)))*255)
 depth_pre = np.resize(depth_pre,(5,5))
+depth_pre_new = ((depth_pre_new/max(max(depth_pre_new)))*255)
+depth_pre_new = np.resize(depth_pre_new,(5,5))
 #depth_act = depth_dest[-1,:]
 #depth_act = ((depth_act/max(depth_act))*255)
 #depth_act = np.resize(depth_act,(80,60))
 print "\n*****Reshaped********\n", depth_pre
+print depth_pre_new.shape
+print depth_pre.shape
+
 
 sci.imsave('images/predict_depth_rand.jpg', depth_pre_new)
 sci.imsave('images/predict_depth.jpg', depth_pre)

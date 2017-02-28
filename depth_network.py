@@ -79,7 +79,7 @@ model.add(Dense(4096, init='uniform', activation='relu'))
 model.add(Dense(5*5, init='uniform', activation='linear'))
 
 #compile the model
-model.compile(loss='mean_squared_error', optimizer='RMSprop', metrics = ['accuracy'])
+model.compile(loss='mean_squared_error', optimizer='adam', metrics = ['accuracy'])
 
 #fit the model to matching depth data
 model.fit(image_dest, depth_dest, nb_epoch=30, batch_size=256, validation_split=0.2)
