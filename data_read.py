@@ -18,8 +18,8 @@ print "***********************\n", np.max(depths), np.min(depths), depths.dtype
 #sci.imsave("images/actual_image.jpg", images[-1])
 
 image_dest = np.empty((images.shape[0], 320, 240, 3))
-depth_resize = np.empty((depths.shape[0], 80, 60))
-depth_dest = np.empty((depths.shape[0], 80*60))
+depth_resize = np.empty((depths.shape[0], 5, 5))
+depth_dest = np.empty((depths.shape[0], 5*5))
 
 images = np.swapaxes(np.swapaxes(images, 1,3), 1,2)
 
@@ -38,7 +38,7 @@ image_dest = image_dest/255
 #sci.imsave("images/before_resize.jpg", depths[-1].reshape()
 
 for d in range(depths.shape[0]):
-    depth_resize[d,...] = sci.imresize(depths[d,:,:], (80,60), mode="F")
+    depth_resize[d,...] = sci.imresize(depths[d,:,:], (5,5), mode="F")
     depth_dest[d,...] = depth_resize[d].flatten()
 
 #depth_dest = np.expand_dims(depth_dest, axis=3)

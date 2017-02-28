@@ -68,7 +68,7 @@ class RedDepthNode(object):
         """ Handle image/point_cloud callbacks. """
 
         # Convert the image message to a cv image object
-        
+
         rgb_img = self.cv_bridge.imgmsg_to_cv2(img, "bgr8")
         self.image_arrays = np.append(self.image_arrays, np.resize(rgb_img, (1, 480, 640,3)), axis=0)
 	depth_img = self.cv_bridge.imgmsg_to_cv2(depth)
@@ -77,7 +77,7 @@ class RedDepthNode(object):
         print depth_img.shape, rgb_img.shape
 
 
-        
+
 
 
 if __name__ == "__main__":

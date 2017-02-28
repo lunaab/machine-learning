@@ -28,11 +28,11 @@ else:
 
     image_dest = np.empty((images.shape[0], 320, 240, 3))
     depth_resize = np.empty((depths.shape[0], 80, 60))
-    depth_dest = np.empty((depths.shape[0], 80*60))
+    depth_dest = np.empty((depths.shape[0], 5*5))
 
 
     depths = np.expand_dims(depths, axis=3)
-    images = np.swapaxes(np.swapaxes(images, 1,3), 1,2)
+    images = np.swapaxes(np.swapaxes(images, 1,3), 1,2)	
 
     #Resize the data to fit the desired input shape (None, 320, 240, 3)
     for i in range(images.shape[0]):
@@ -42,7 +42,7 @@ else:
     image_dest = image_dest/255
 
     for d in range(depths.shape[0]):
-        depth_resize[d,...] = sci.imresize(depths[d,:,:,:], (80,60), mode="F")
+        depth_resize[d,...] = sci.imresize(depths[d,:,:,:], (5,5), mode="F")
         depth_dest[d,...] = depth_resize[d].flatten()
 
     #save the image and depth data as arrays so that the next run is quicker
@@ -76,7 +76,7 @@ model.add(Flatten())
 model.add(Dense(4096, init='uniform', activation='relu'))
 #model.add(Dense(80*60, init='uniform', activation='relu'))
 
-model.add(Dense(80*60, init='uniform', activation='linear'))
+model.add(Dense(5*5, init='uniform', activation='linear'))
 
 #compile the model
 model.compile(loss='mean_squared_error', optimizer='RMSprop', metrics = ['accuracy'])
