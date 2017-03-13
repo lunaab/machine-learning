@@ -3,9 +3,10 @@ from keras.layers import Dense
 from keras.layers import Convolution2D
 from keras.layers.pooling import MaxPooling2D
 from keras.layers.core import Flatten
+from keras.preprocessing.image import ImageDataGenerator
+
 
 import numpy as np
-import cv2
 import scipy.misc as sci
 import h5py as h
 import os.path
@@ -31,7 +32,7 @@ else:
 
 
     depths = np.expand_dims(depths, axis=3)
-    images = np.swapaxes(np.swapaxes(images, 1,3), 1,2)	
+    images = np.swapaxes(np.swapaxes(images, 1,3), 1,2) 
 
     #Resize the data to fit the desired input shape (None, 320, 240, 3)
     for i in range(images.shape[0]):
@@ -51,6 +52,7 @@ else:
 
 #here the model architecture is defined
 #using TS for background so depth data has to be ordered (width, heighth, depth)
+
 model = Sequential()
 
 # Coarse 1
@@ -81,11 +83,16 @@ model.add(Dense(5*5, init='uniform', activation='linear'))
 model.compile(loss='mean_squared_error', optimizer='adam', metrics = ['accuracy'])
 
 #fit the model to matching depth data
-model.fit(image_dest, depth_dest, nb_epoch=30, batch_size=32, validation_split=0.2)
+#model.fit(image_dest, depth_dest, nb_epoch=30, batch_size=32, validation_split=0.2)
+data_generator = ImageDataGenerator(samplewise_center=True, samplewise_std_normalization=True)
+
+data_generator.fit(image_dest)
+
+model.fit_generator(data_generator.flow(image_dest, depth_dest,batch_size=32),
+                    samples_per_epoch=image_dest.shape[0], nb_epoch=250)
 
 #evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)
-print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 if save_model:
-    model.save("model_depth.h5")
+    model.save("model_depth_prepro.h5")

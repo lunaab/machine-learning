@@ -1,15 +1,19 @@
-from keras.models import Sequential
-from keras.models import load_model
-
 import numpy as np
 import cv2
 import scipy.misc as sci
 import h5py as h
 import os.path
 import time
+import sys
 
-model = load_model("depth_net.h5")
+if len(sys.argv) != 2:
+  sys.exit("Usage: python predict.py <\"model-file-path\">")
 
+from keras.models import load_model
+from keras.models import Sequential
+
+#loads the desired model to predict
+model = load_model(sys.argv[1])
 
 print "Model has been loaded\n"
 
