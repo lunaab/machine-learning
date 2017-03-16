@@ -88,8 +88,8 @@ data_generator = ImageDataGenerator(samplewise_center=True, samplewise_std_norma
 
 data_generator.fit(image_dest)
 
-model.fit_generator(data_generator.flow(image_dest, depth_dest,batch_size=32),
-                    samples_per_epoch=image_dest.shape[0], nb_epoch=250)
+model.fit_generator(data_generator.flow(image_dest, depth_dest,batch_size=64),
+                    samples_per_epoch=image_dest.shape[0], nb_epoch=60)
 
 #evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)
