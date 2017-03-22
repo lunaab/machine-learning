@@ -27,7 +27,7 @@ class DepthPredictor (object):
         """ Read in the model. Start the node. Set up Subs and Pubs"""
         rospy.init_node('depth_predictor')
         
-        self.model = load_model("model_name.h5")
+        self.model = load_model("model_depth.h5")
 
         rospy.spin()
 

@@ -84,7 +84,7 @@ model.compile(loss='mean_squared_error', optimizer='adam', metrics = ['accuracy'
 
 #fit the model to matching depth data
 #model.fit(image_dest, depth_dest, nb_epoch=30, batch_size=32, validation_split=0.2)
-data_generator = ImageDataGenerator(samplewise_center=True, samplewise_std_normalization=True)
+data_generator = ImageDataGenerator(featurewise_center=True, featurewise_std_normalization=True)
 
 data_generator.fit(image_dest)
 
