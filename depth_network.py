@@ -3,6 +3,7 @@ from keras.layers import Dense
 from keras.layers import Convolution2D
 from keras.layers.pooling import MaxPooling2D
 from keras.layers.core import Flatten
+from keras.layers.core import Dropout
 
 import numpy as np
 import cv2
@@ -72,6 +73,7 @@ model.add(MaxPooling2D(pool_size=(2,2)))
 
 #Coarse 6
 model.add(Flatten())
+model.add(Dropout(.1))
 model.add(Dense(4096, init='uniform', activation='relu'))
 #model.add(Dense(80*60, init='uniform', activation='relu'))
 
