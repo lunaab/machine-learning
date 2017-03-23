@@ -13,6 +13,7 @@ from visualization_msgs.msg import Marker
 import numpy as np
 from message_filters import ApproximateTimeSynchronizer
 import message_filters
+import sys
 
 
 def make_sphere_marker(x, y, z, scale, frame_id, stamp):
@@ -42,8 +43,9 @@ class RedDepthNode(object):
     """
 
     def __init__(self):
-        ser = serial.Serial('/dev/ttyUSB0')
-        ser.baudrate = 9600
+        self.save_loc = "data_collect/" + sys.argv[1] + ".npz"
+        self.ser = serial.Serial('/dev/ttyUSB0')
+        self.ser.baudrate = 9600
         """ Construct the red-pixel finder node."""
         rospy.init_node('red_depth_node')
         self.cv_bridge = CvBridge()
@@ -69,17 +71,19 @@ class RedDepthNode(object):
         rospy.spin()
 
 		# code for saving images and depth data using numpy.savez_compressed
-        np.savez_compressed('image_depth_data',  self.image_arrays[1:,:,:,:], self.depth_arrays[1:,:,:], self.motion_arrays[1:,:,:])
+        np.savez_compressed(self.save_loc,  self.image_arrays[1:,:,:,:], self.depth_arrays[1:,:,:], self.motion_arrays[1:,:,:])
 
     def image_points_callback(self, img, depth):
         """ Handle image/point_cloud callbacks. """
 
         # Convert the image message to a cv image object
-        
+        print "in call back\n"
         rgb_img = self.cv_bridge.imgmsg_to_cv2(img, "bgr8")
         depth_img = self.cv_bridge.imgmsg_to_cv2(depth)
-        ser.write('f')
-        motion = ser.readline()
+        #print "recieved depth and rgd images"
+  
+        self.ser.write('f')
+        motion = self.ser.readline()
         motion_split = motion.split()
         if (len(motion_split) != 6):
             print "ERROR"
@@ -92,7 +96,8 @@ class RedDepthNode(object):
             motion_sub[0][2][0] = float(motion_split[4])
             motion_sub[0][2][1] = float(motion_split[5])
             self.motion_arrays = np.append(self.motion_arrays, motion_sub, axis=0)
-        
+        print ""
+
         self.image_arrays = np.append(self.image_arrays, np.resize(rgb_img, (1, 480, 640,3)), axis=0)
         self.depth_arrays = np.append(self.depth_arrays, np.resize(depth_img, (1, 480, 640)), axis=0)
 
@@ -103,4 +108,7 @@ class RedDepthNode(object):
 
 
 if __name__ == "__main__":
-	r = RedDepthNode()
+    if len(sys.argv) != 2:
+        print "Usage: \"python asus_image_depth.py <destination_no_extension>\""
+        exit(-1)
+    r = RedDepthNode()
