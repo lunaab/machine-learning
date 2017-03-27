@@ -11,6 +11,7 @@ import message_filters
 
 from rospy.numpy_msg import numpy_msg
 from rospy_tutorials.msg import Floats
+from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from keras.models import load_model
 from keras.models import Sequential
@@ -34,28 +35,29 @@ class DepthPredictor (object):
         #create publisher
         self.depth_pub = rospy.Publisher('depth_pre', numpy_msg(Floats), queue_size=10)
 
+        #subscribe to the image callback
+        rospy.Subscriber("cv_camera/image_raw", Image, image_callback)
+
         #Video Cap set to 1 to get USB camera plugged in.
+        """
         self.capture = cv2.VideoCapture(1)
         self.width = 320
         self.height = 240
         self.capture.set(4, self.width)
         self.capture.set(3, self.height)
-        self.predict_pub()
+        """
         rospy.spin()
 
-    def predict_pub(self):
+    def image_callback(self, img):
         """
         This method recieves an image and converts in to an np array.
         The image is then given to the model for an prediction output.
         The prediction is then published to a topic to be processed.
         """
-        while not rospy.is_shutdown():
-            success, img = self.capture.read()
-            img = np.swapaxes(img,0,1)/255
-            #print img.shape
-            prediction = self.model.predict(np.array([img]), batch_size=1, verbose=0)
-            print prediction.shape
-            self.depth_pub.publish(prediction)
+        print np.array(img).shape
+        #prediction = self.model.predict(np.array([img]), batch_size=1, verbose=0)
+        #print prediction.shape
+        #self.depth_pub.publish(prediction)
 
 
 if __name__ == "__main__":
