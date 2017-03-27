@@ -4,6 +4,7 @@ import matplotlib.image as mpimg
 from PIL import Image
 import time
 import sys
+import cv2
 
 if len(sys.argv) != 2:
     print "Usage: \"python view_data.py <file.npz>\""
@@ -23,7 +24,8 @@ for i in range(images.shape[0]):
     plt.subplot(1,2,1)
     plt.imshow(depths[i,:,:])
     plt.subplot(1,2,2)
-    plt.imshow(images[i,:,:,:])
+    plt.imshow(images[i,:,:,::-1]/255.0)
+#    plt.imshow(cv2.cvtColor(images[i,:,:,], cv2.COLOR_BGR2RGB))
     print motion[i,:,:]
     plt.show()
 
