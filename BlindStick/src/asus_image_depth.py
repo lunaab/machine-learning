@@ -15,7 +15,7 @@ from visualization_msgs.msg import Marker
 import numpy as np
 from message_filters import ApproximateTimeSynchronizer
 import message_filters
-
+import sys
 
 def make_sphere_marker(x, y, z, scale, frame_id, stamp):
     """ Create a red sphere marker message at the indicated position. """
@@ -47,6 +47,7 @@ class RedDepthNode(object):
         
         """ Construct the red-pixel finder node."""
         rospy.init_node('red_depth_node')
+        self.save_loc = "data_collect/" + argv[1]
         self.cv_bridge = CvBridge()
         self.image_arrays = np.empty( (1, 480, 640,3) )
         self.depth_arrays = np.empty( (1, 480, 640) )
@@ -61,7 +62,7 @@ class RedDepthNode(object):
         motion_sub = message_filters.Subscriber('accel_data', numpy_msg(Floats))
         print 'prepare to synch'
         self.kinect_synch = ApproximateTimeSynchronizer([img_sub, cloud_sub, motion_sub],
-                                                        queue_size=10,slop=.01)
+                                                        queue_size=10,slop=.02)
         print 'prepare callback'
         self.kinect_synch.registerCallback(self.image_points_callback)
         
@@ -100,4 +101,7 @@ class RedDepthNode(object):
 
 
 if __name__ == "__main__":
-	r = RedDepthNode()
+	if len(sys.argv) != 2:
+                print "Usage: \"python asus_image_depth.py <destination_no_extension>\""
+                exit(-1)
+        r = RedDepthNode()
