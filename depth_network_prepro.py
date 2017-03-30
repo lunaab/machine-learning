@@ -50,9 +50,18 @@ else:
     np.save('ny_depth', depth_dest)
 
 
-#here the model architecture is defined
-#using TS for background so depth data has to be ordered (width, heighth, depth)
+#Setting up validation data since validation_split cannot be used with generators
+image_validation = image_dest[int(image_dest.shape[0]*.8):,:]
+image_dest = image_dest[:int(image_dest.shape[0]*.8),:]
 
+depth_validation = depth_dest[int(depth_dest.shape[0]*.8):]
+depth_dest = depth_dest[:int(depth_dest.shape[0]*.8)]
+
+
+"""
+here the model architecture is defined
+using TS for background so depth data has to be ordered (width, heighth, depth)
+"""
 model = Sequential()
 
 # Coarse 1
@@ -74,9 +83,9 @@ model.add(MaxPooling2D(pool_size=(2,2)))
 
 #Coarse 6
 model.add(Flatten())
+model.add(Dense(256,init='uniform', activation='relu'))
 model.add(Dense(4096, init='uniform', activation='relu'))
 #model.add(Dense(80*60, init='uniform', activation='relu'))
-
 model.add(Dense(5*5, init='uniform', activation='linear'))
 
 #compile the model
@@ -84,12 +93,14 @@ model.compile(loss='mean_squared_error', optimizer='adam', metrics = ['accuracy'
 
 #fit the model to matching depth data
 #model.fit(image_dest, depth_dest, nb_epoch=30, batch_size=32, validation_split=0.2)
-data_generator = ImageDataGenerator(featurewise_center=True, featurewise_std_normalization=True)
+data_generator = ImageDataGenerator(featurewise_center=True, featurewise_std_normalization=True,
+                                    width_shift_range=.1, height_shift_range=.1)
 
 data_generator.fit(image_dest)
 
 model.fit_generator(data_generator.flow(image_dest, depth_dest,batch_size=64),
-                    samples_per_epoch=image_dest.shape[0], nb_epoch=60)
+                    samples_per_epoch=image_dest.shape[0], nb_epoch=60,
+                    validation_data=(image_validation, depth_validation))
 
 #evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)
