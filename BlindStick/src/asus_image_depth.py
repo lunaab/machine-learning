@@ -47,7 +47,7 @@ class RedDepthNode(object):
         
         """ Construct the red-pixel finder node."""
         rospy.init_node('red_depth_node')
-        self.save_loc = "data_collect/" + sys.argv[1]
+        self.save_loc = "data_collect/" + argv[1]
         self.cv_bridge = CvBridge()
         self.image_arrays = np.empty( (1, 480, 640,3) )
         self.depth_arrays = np.empty( (1, 480, 640) )
@@ -70,7 +70,7 @@ class RedDepthNode(object):
         rospy.spin()
 
 		# code for saving images and depth data using numpy.savez_compressed
-        np.savez_compressed(self.save_loc,  self.image_arrays[1:,:,:,:], self.depth_arrays[1:,:,:], self.motion_arrays[1:,:,:])
+        np.savez_compressed('image_depth_data',  self.image_arrays[1:,:,:,:], self.depth_arrays[1:,:,:], self.motion_arrays[1:,:,:])
 
     def image_points_callback(self, img, depth, motion):
         """ Handle image/point_cloud callbacks. """

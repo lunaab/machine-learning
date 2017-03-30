@@ -26,5 +26,4 @@ for i in range(image_dest.shape[0]):
     plt.imshow(image_dest[i,:,:,:])
 
     plt.show()
-    
-    
+

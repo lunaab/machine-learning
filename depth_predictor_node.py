@@ -3,12 +3,15 @@
 import rospy
 import numpy as np
 import scipy.misc as sci
-import h5py as h
 import sys
 import os.path
 import cv2
+import h5py as h
 import message_filters
 
+from rospy.numpy_msg import numpy_msg
+from rospy_tutorials.msg import Floats
+from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from keras.models import load_model
 from keras.models import Sequential
@@ -21,27 +24,42 @@ class DepthPredictor (object):
     Subscribes:
         /camera/rgb/image_color
     Publishes:
-        TODO
+        /depth_pre
     """
     def __init__(self):
         """ Read in the model. Start the node. Set up Subs and Pubs"""
         rospy.init_node('depth_predictor')
-        
-        self.model = load_model("model_depth.h5")
 
+        self.model = load_model("../models/model_depth.h5")
+
+        #create publisher
+        self.depth_pub = rospy.Publisher('depth_pre', numpy_msg(Floats), queue_size=10)
+
+        #subscribe to the image callback
+        rospy.Subscriber("cv_camera/image_raw", Image, image_callback)
+
+        #Video Cap set to 1 to get USB camera plugged in.
+        """
+        self.capture = cv2.VideoCapture(1)
+        self.width = 320
+        self.height = 240
+        self.capture.set(4, self.width)
+        self.capture.set(3, self.height)
+        """
         rospy.spin()
 
-    def image_prediction_callback(self, img):
+    def image_callback(self, img):
         """
         This method recieves an image and converts in to an np array.
         The image is then given to the model for an prediction output.
         The prediction is then published to a topic to be processed.
-
-        img = np.array(sci.imresize(np.array(img), (320,240,3)))
-        prediction = self.model.predict(img, batch_size=1, verbose=1)
-        publisher.pub(prediction)
         """
-        pass
+        print np.array(img).shape
+        #prediction = self.model.predict(np.array([img]), batch_size=1, verbose=0)
+        #print prediction.shape
+        #self.depth_pub.publish(prediction)
+
 
 if __name__ == "__main__":
     d = DepthPredictor()
+
