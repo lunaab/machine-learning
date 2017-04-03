@@ -4,6 +4,7 @@
 
 Data collection steps:
 
+0) Run roscore in a terminal
 1) Plug the ASUS camera into a USB port
    a) Launch ros to connect camera by executing this command:
         roslaunch openni2_launch openni2.launch
