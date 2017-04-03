@@ -15,40 +15,8 @@ import os.path
 #Set to true to save model after training
 save_model = True
 
-if os.path.isfile('ny_image.npy') and os.path.isfile('ny_depth.npy'):
-    image_dest = np.load('ny_image.npy')
-    depth_dest = np.load('ny_depth.npy')
-else:
-    #import data from dataset here
-    data = h.File("../image_data/nyu_depth_v2_labeled.mat")
-    variables = data.items()
-
-    #extract data from the Dataset .mat
-    images = data.get('images')
-    depths  = data.get('depths')
-
-    image_dest = np.empty((images.shape[0], 320, 240, 3))
-    depth_resize = np.empty((depths.shape[0], 80, 60))
-    depth_dest = np.empty((depths.shape[0], 5*5))
-
-
-    depths = np.expand_dims(depths, axis=3)
-    images = np.swapaxes(np.swapaxes(images, 1,3), 1,2)
-
-    #Resize the data to fit the desired input shape (None, 320, 240, 3)
-    for i in range(images.shape[0]):
-        image_dest[i,...] = sci.imresize(images[i,:,:,:], (320,240,3))
-
-    #Normalize the image data by the maximum pixel size
-    image_dest = image_dest/255
-
-    for d in range(depths.shape[0]):
-        depth_resize[d,...] = sci.imresize(depths[d,:,:,:], (5,5), mode="F")
-        depth_dest[d,...] = depth_resize[d].flatten()
-
-    #save the image and depth data as arrays so that the next run is quicker
-    np.save('ny_image', image_dest)
-    np.save('ny_depth', depth_dest)
+image_dest = np.load('image_data.npy')
+depth_dest = np.load('depth_data.npy')
 
 def nan_mse(output, target):
      sub = tf.subtract(output, target)
@@ -56,7 +24,7 @@ def nan_mse(output, target):
      nans = tf.logical_not(tf.is_nan(target))
      nans_to_zero = tf.cast(nans, tf.float32)
      big_num = tf.constant(10000000.0)
-     nans_to_zero_and_big = tf.mul(nans_to_zero, big_num)
+     nans_to_zero_and_big = tf.multiply(nans_to_zero, big_num)
      sqr = tf.minimum(sqr, nans_to_zero_and_big)
      num_non_nans = tf.reduce_sum(nans_to_zero, axis=-1)
      return tf.div(tf.reduce_sum(sqr, axis=-1), num_non_nans)

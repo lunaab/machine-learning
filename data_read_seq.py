@@ -37,6 +37,8 @@ class DataRead():
 
         random_selections = np.random.choice(id.shape[0], id.shape[0], replace=False)
 
+        id = np.swapaxes(np.swapaxes(id, 1,3), 1,2)
+
         i = 0
         for r in random_selections:
             image_dest[i,...] = sci.imresize(id[r,:,:,:], (320,240,3))
@@ -48,10 +50,11 @@ class DataRead():
             depth_dest[i,...] = depth_resize[i].flatten()
             i += 1
 
+        print image_dest.shape
+        print depth_dest.shape
 
-
-        np.save('image_data.npy',id)
-        np.save('depth_data.npy',dd)
+        np.save('image_data.npy',image_dest)
+        np.save('depth_data.npy',depth_dest)
         np.save('accel_data.npy',ad)
 
 if __name__ == "__main__":
