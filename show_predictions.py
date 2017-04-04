@@ -8,9 +8,22 @@ import scipy.misc as sci
 import h5py as h
 import os.path
 import time
+import tensorflow as tf
 
-model = load_model("depth_net.h5")
+def nan_mse(output, target):
+     sub = tf.subtract(output, target)
+     sqr = tf.square(sub)
+     nans = tf.logical_not(tf.is_nan(target))
+     nans_to_zero = tf.cast(nans, tf.float32)
+     big_num = tf.constant(10000000.0)
+     nans_to_zero_and_big = tf.multiply(nans_to_zero, big_num)
+     sqr = tf.minimum(sqr, nans_to_zero_and_big)
+     num_non_nans = tf.reduce_sum(nans_to_zero, axis=-1)
+     return tf.div(tf.reduce_sum(sqr, axis=-1), num_non_nans)
 
+model = load_model("model_depth_nan.h5", custom_objects={'nan_mse': nan_mse})
+
+#model.compile(loss=nan_mse, optimizer='adam', metrics = ['accuracy'])
 
 print "Model has been loaded\n"
 
