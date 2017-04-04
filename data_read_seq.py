@@ -26,9 +26,15 @@ class DataRead():
                     dd = data['arr_1']
                     ad = data['arr_2']
                 else:
-                    np.append(id,data['arr_0'], axis=0)
-                    np.append(dd,data['arr_1'], axis=0)
-                    np.append(ad,data['arr_2'], axis=0)
+                    id = np.append(id,data['arr_0'], axis=0)
+                    dd = np.append(dd,data['arr_1'], axis=0)
+                    ad = np.append(ad,data['arr_2'], axis=0)
+                    a = id.shape[0] - dd.shape[0]
+                    if a > 0:
+                        for p in range(a):
+                            id = np.delete(id, -1, axis=0)
+                    print id.shape
+                    print dd.shape
             i += 1
 
         image_dest = np.empty((id.shape[0], 320, 240, 3))
@@ -49,6 +55,8 @@ class DataRead():
             depth_resize[i,...] = sci.imresize(dd[r,:,:], (5,5), mode="F")
             depth_dest[i,...] = depth_resize[i].flatten()
             i += 1
+
+        image_dest = image_dest/255
 
         print image_dest.shape
         print depth_dest.shape
