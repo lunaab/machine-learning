@@ -69,4 +69,4 @@ scores = model.evaluate(image_dest, depth_dest)
 print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 if save_model:
-    model.save("model_depth.h5")
+    model.save("model_depth_nan.h5")
