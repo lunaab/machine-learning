@@ -19,15 +19,15 @@ image_dest = np.load('image_data.npy')
 depth_dest = np.load('depth_data.npy')
 
 def nan_mse(output, target):
-     sub = tf.subtract(output, target)
+     sub = tf.sub(output, target)
      sqr = tf.square(sub)
      nans = tf.logical_not(tf.is_nan(target))
      nans_to_zero = tf.cast(nans, tf.float32)
      big_num = tf.constant(10000000.0)
-     nans_to_zero_and_big = tf.multiply(nans_to_zero, big_num)
+     nans_to_zero_and_big = tf.mul(nans_to_zero, big_num)
      sqr = tf.minimum(sqr, nans_to_zero_and_big)
-     num_non_nans = tf.reduce_sum(nans_to_zero, axis=-1)
-     return tf.div(tf.reduce_sum(sqr, axis=-1), num_non_nans)
+     num_non_nans = tf.reduce_sum(nans_to_zero) #, axis=-1)
+     return tf.div(tf.reduce_sum(sqr), num_non_nans)
 
 #here the model architecture is defined
 #using TS for background so depth data has to be ordered (width, heighth, depth)
@@ -62,7 +62,7 @@ model.add(Dense(5*5, init='uniform', activation='linear'))
 model.compile(loss=nan_mse, optimizer='adam', metrics = ['accuracy'])
 
 #fit the model to matching depth data
-model.fit(image_dest, depth_dest, nb_epoch=60, batch_size=32, validation_split=0.2)
+model.fit(image_dest, depth_dest, nb_epoch=100, batch_size=32, validation_split=0.2)
 
 #evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)
