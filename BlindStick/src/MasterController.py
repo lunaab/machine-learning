@@ -68,8 +68,13 @@ class RedDepthNode(object):
         depths = depth_img[depth_img.shape[0]/2, 0::spacing]
         print depths
         
-        depths = (self.slope * depths) + (self.slope * self.lowV) + self.farest_trigger
-        
+        depths = (self.slope * depths) + (self.slope * self.lowest_trigger) + self.highV
+        for i in range(0,4):
+            if (data[i] > self.highV):
+                data[i] = self.highV
+            if (data[i] < self.lowV):
+                data[i] = 0
+       
         self.arduino.write('a,' + depths[0] + ',b,' + depths[1] + ',c,' + depths[2], ',d,' + depths[3]
                            + ',e,' + depths[4] + '\n') 
 
