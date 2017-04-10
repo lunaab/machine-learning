@@ -9,7 +9,7 @@ import os
 def read_from_mat(filename):
     if not os.path.exists(filename):
         print "File does not exist. Try Again."
-        exit(-1) 
+        exit(-1)
 
     #import data from dataset here
     data = h.File(filename)
@@ -70,10 +70,11 @@ def read_from_dir(dir):
         exit(-1)
     i = 0
     for f in os.listdir(dir):
-        f = "data_collect/" + f
+        f = dir + "/" + f
         if not os.path.isdir(f):
             data = np.load(f)
             if i == 0:
+                i += 1
                 id = data['arr_0']
                 dd = data['arr_1']
                 ad = data['arr_2']
@@ -85,12 +86,10 @@ def read_from_dir(dir):
                 if a > 0:
                     for p in range(a):
                         id = np.delete(id, -1, axis=0)
-                print id.shape
-                print dd.shape
-        i += 1
 
+
+    print id.shape
     image_dest = np.empty((id.shape[0], 320, 240, 3))
-    depth_resize = np.empty((dd.shape[0], 5, 5))
     depth_dest = np.empty((dd.shape[0], 5*5))
 
     random_selections = np.random.choice(id.shape[0], id.shape[0], replace=False)
@@ -102,13 +101,28 @@ def read_from_dir(dir):
         image_dest[i,...] = sci.imresize(id[r,:,:,:], (320,240,3))
         i += 1
 
+    d_min = np.empty((5,5))
+    d_mins = np.empty((5,5))
+
+    bool = True
+    for d in dd:
+        for i in range(0,5):
+            for j in range(0,5):
+                d_min[i,j] = min(d[i*96:(i + 1)*96,j*128:(j+1)*128].flatten())
+        if bool:
+            d_mins = [d_min]
+            bool = False
+        else:
+            d_mins = np.concatenate((d_mins, [d_min]), axis=0)
+
+    print d_mins.shape
     i = 0
     for r in random_selections:
-        depth_resize[i,...] = sci.imresize(dd[r,:,:], (5,5), mode="F")
-        depth_dest[i,...] = depth_resize[i].flatten()
+        depth_dest[i,...] = d_mins[i].flatten()
         i += 1
 
     image_dest = image_dest/255
+    depth_dest = depth_dest/1000
 
     print image_dest.shape
     print depth_dest.shape

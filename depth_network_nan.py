@@ -4,6 +4,7 @@ from keras.layers import Convolution2D
 from keras.layers.pooling import MaxPooling2D
 from keras.layers.core import Flatten
 from keras.layers.core import Dropout
+from keras.optimizers import SGD
 
 import tensorflow as tf
 import numpy as np
@@ -33,6 +34,8 @@ def nan_mse(output, target):
 #using TS for background so depth data has to be ordered (width, heighth, depth)
 model = Sequential()
 
+sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9)
+
 # Coarse 1
 model.add(Convolution2D(96,11,11,activation='relu',input_shape=(320, 240,3),dim_ordering='tf',
                         subsample=(4,4)))
@@ -59,10 +62,10 @@ model.add(Dense(4096, init='uniform', activation='relu'))
 model.add(Dense(5*5, init='uniform', activation='linear'))
 
 #compile the model
-model.compile(loss=nan_mse, optimizer='adam', metrics = ['accuracy'])
+model.compile(loss='mean_squared_error', optimizer=sgd, metrics = ['accuracy'])
 
 #fit the model to matching depth data
-model.fit(image_dest, depth_dest, nb_epoch=100, batch_size=32, validation_split=0.2)
+model.fit(image_dest, depth_dest, nb_epoch=60, batch_size=32, validation_split=0.2)
 
 #evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)
