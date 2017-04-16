@@ -28,7 +28,7 @@ class RedDepthNode(object):
         
         """ Construct the red-pixel finder node."""
         rospy.init_node('red_depth_node')
-        #self.arduino = serial.Serial('/dev/ttyUSB0', 19200)
+        self.arduino = serial.Serial('/dev/ttyUSB0', 19200)
         self.cv_bridge = CvBridge()
         self.depth_arrays = np.empty( (1, 480, 640) )
         self.farest_trigger = 1000.0
@@ -69,6 +69,7 @@ class RedDepthNode(object):
         depths = depth_img[depth_img.shape[0]/2, 0::spacing]
         print depths
         depths = (self.slope * depths) - (self.slope * self.lowest_trigger) + self.highV
+        depths = depths.astype(int)
         print depths
         for i in range(0,5):
             if (depths[i] > self.highV):
@@ -76,8 +77,8 @@ class RedDepthNode(object):
             if (depths[i] < self.lowV):
                 depths[i] = 0
         print depths
-        #self.arduino.write('a,' + depths[0] + ',b,' + depths[1] + ',c,' + depths[2], ',d,' + depths[3]
-                            #+ ',e,' + depths[4] + '\n') 
+        toSend = "%d,%d,%d,%d,%d," % (depths[0], depths[1], depths[2], depths[3], depths[4])
+        self.arduino.write(toSend) 
 
 
 if __name__ == "__main__":
