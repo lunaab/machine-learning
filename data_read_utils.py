@@ -64,7 +64,9 @@ def read_from_mat(filename):
     print "Done"
 
 
-def read_from_dir(dir):
+def read_from_dir(dir, file_prefix):
+    debug = False
+
     if not os.path.isdir(dir):
         print "Not a directory. Give a Directory name."
         exit(-1)
@@ -87,8 +89,9 @@ def read_from_dir(dir):
                     for p in range(a):
                         id = np.delete(id, -1, axis=0)
 
+    if debug:
+        print id.shape
 
-    print id.shape
     image_dest = np.empty((id.shape[0], 320, 240, 3))
     depth_dest = np.empty((dd.shape[0], 5*5))
 
@@ -115,7 +118,9 @@ def read_from_dir(dir):
         else:
             d_mins = np.concatenate((d_mins, [d_min]), axis=0)
 
-    print d_mins.shape
+    if debug:
+        print d_mins.shape
+
     i = 0
     for r in random_selections:
         depth_dest[i,...] = d_mins[i].flatten()
@@ -124,11 +129,26 @@ def read_from_dir(dir):
     image_dest = image_dest/255
     depth_dest = depth_dest/1000
 
-    print image_dest.shape
-    print depth_dest.shape
+    depth_dest[depth_dest == 0] = float('nan')
 
-    np.save('image_data.npy',image_dest)
-    np.save('depth_data.npy',depth_dest)
-    np.save('accel_data.npy',ad)
+    if debug:
+        print image_dest.shape
+        print depth_dest.shape
+
+    np.save(file_prefix + '_image_data.npy',image_dest)
+    np.save(file_prefix + '_depth_data.npy',depth_dest)
+    np.save(file_prefix + '_accel_data.npy',ad)
 
 
+def convert_im_dir(dir):
+    if not os.path.isdir(dir):
+        print "Not a directory. Give a Directory name."
+        exit(-1)
+
+    for f in os.listdir(dir):
+        f = dir + "/" + f
+        if not os.path.isdir(f):
+            data = np.load(f)
+            i = data['arr_0']
+            asint = i.astype('uint8')
+            np.savez_compressed(f, asint, data['arr_1'], data['arr_2'])

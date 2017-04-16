@@ -83,7 +83,7 @@ model.add(Dense(5*5, init='uniform', activation='linear'))
 model.compile(loss='mean_squared_error', optimizer='adam', metrics = ['accuracy'])
 
 #fit the model to matching depth data
-model.fit(image_dest, depth_dest, nb_epoch=60, batch_size=32, validation_split=0.2)
+model.fit(image_dest, depth_dest, nb_epoch=10, batch_size=32, validation_split=0.2)
 
 #evaluate the performance of the model
 scores = model.evaluate(image_dest, depth_dest)
