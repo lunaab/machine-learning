@@ -5,7 +5,32 @@ import scipy.ndimage
 import h5py as h
 import os
 
+"""
+data_read_utils supplies the necessary functions
+for reading in image, depth, and accelerometer data
+for the purposes of The Depth Perception System(JMU 2017)
 
+Author: Nathan Johnson
+"""
+
+
+"""
+read_from_mat takes in an ".h5" file (matlab)
+that is compressed with a specific set of
+objects. The file used in this case is called:
+  nyu_depth_v2_labeled.mat
+
+A full description of this dataset can be found at:
+
+  http://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html
+
+This method reads the depth and image data into two npys:
+
+  ny_depth with shape (,5,5)
+  ny_image with shape (,320,240,3)
+
+Author: Nathan Johnson
+"""
 def read_from_mat(filename):
     if not os.path.exists(filename):
         print "File does not exist. Try Again."
@@ -64,8 +89,13 @@ def read_from_mat(filename):
     print "Done"
 
 
+"""
+
+Author: Nathan Johnson
+"""
 def read_from_dir(dir, file_prefix):
     debug = False
+    save_dir = 'io_net_data/'
 
     if not os.path.isdir(dir):
         print "Not a directory. Give a Directory name."
@@ -111,7 +141,11 @@ def read_from_dir(dir, file_prefix):
     for d in dd:
         for i in range(0,5):
             for j in range(0,5):
-                d_min[i,j] = min(d[i*96:(i + 1)*96,j*128:(j+1)*128].flatten())
+                sec_mins = [d_val for d_val in d[i*96:(i + 1)*96,j*128:(j+1)*128].flatten() if d_val > 0]
+                if len(sec_mins) == 0:
+                    d_min[i, j] = 0
+                else:
+                    d_min[i,j] = min(sec_mins)
         if bool:
             d_mins = [d_min]
             bool = False
@@ -120,6 +154,7 @@ def read_from_dir(dir, file_prefix):
 
     if debug:
         print d_mins.shape
+        print d_mins
 
     i = 0
     for r in random_selections:
@@ -132,14 +167,23 @@ def read_from_dir(dir, file_prefix):
     depth_dest[depth_dest == 0] = float('nan')
 
     if debug:
-        print image_dest.shape
-        print depth_dest.shape
+        print "Image shape: ", image_dest.shape
+        print "Depth shape: ", depth_dest.shape
+        print "Max depth value: ", max(depth_dest[0])
 
-    np.save(file_prefix + '_image_data.npy',image_dest)
-    np.save(file_prefix + '_depth_data.npy',depth_dest)
-    np.save(file_prefix + '_accel_data.npy',ad)
+    np.save(save_dir + file_prefix + '_image_data.npy',image_dest)
+    np.save(save_dir + file_prefix + '_depth_data.npy',depth_dest)
+    np.save(save_dir + file_prefix + '_accel_data.npy',ad)
 
 
+"""
+convert_im_dir takes in a directory name and
+converts all of the float values in images to uint_8
+since all rgb values are 0-255.
+This drastically cuts down on the size of the files.
+
+Author: Nathan Johnson
+"""
 def convert_im_dir(dir):
     if not os.path.isdir(dir):
         print "Not a directory. Give a Directory name."

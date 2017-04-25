@@ -13,10 +13,12 @@ import os.path
 
 #Set to true to save model after training
 save_model = True
+dir = 'io_net_data/'
 
-if os.path.isfile('ny_image.npy') and os.path.isfile('ny_depth.npy'):
-    image_dest = np.load('ny_image.npy')
-    depth_dest = np.load('ny_depth.npy')
+
+if os.path.isfile(dir + 'ny_image.npy') and os.path.isfile(dir + 'ny_depth.npy'):
+    image_dest = np.load(dir + 'ny_image.npy')
+    depth_dest = np.load(dir + 'ny_depth.npy')
 else:
     #import data from dataset here
     data = h.File("../image_data/nyu_depth_v2_labeled.mat")
