@@ -90,6 +90,8 @@ def read_from_mat(filename):
 
 
 """
+Takes in npz's and reads the data from each separate file into a single
+numpy array. Slow.
 
 Author: Nathan Johnson
 """
@@ -196,3 +198,29 @@ def convert_im_dir(dir):
             i = data['arr_0']
             asint = i.astype('uint8')
             np.savez_compressed(f, asint, data['arr_1'], data['arr_2'])
+
+
+"""
+Takes in npz file with three arrays, images, depths, and accelerometer data
+and displays it in a plot. Useful for looking at collected data
+"""
+def view_data_from_npz(file):
+    if not os.path.isdir(dir):
+        print "Not a file. Give a file name."
+        exit(-1)
+
+    data = np.load(file)
+
+    images = data['arr_0']
+    depths = data['arr_1']
+    motion = data['arr_2']
+
+    print "Shapes (im, depth, motion): ", images.shape, depths.shape, motion.shape
+
+    for i in range(images.shape[0]):
+        plt.subplot(1,2,1)
+        plt.imshow(depths[i,:,:])
+        plt.subplot(1,2,2)
+        plt.imshow(images[i,:,:,::-1]/255.0)
+        print motion[i,:,:]
+        plt.show()
