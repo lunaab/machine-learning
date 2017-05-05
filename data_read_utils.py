@@ -32,6 +32,8 @@ This method reads the depth and image data into two npys:
 Author: Nathan Johnson
 """
 def read_from_mat(filename):
+    save_dir = 'io_net_data/'
+
     if not os.path.exists(filename):
         print "File does not exist. Try Again."
         exit(-1)
@@ -84,8 +86,8 @@ def read_from_mat(filename):
 
     print "***********************\n"
     print "******Saving Data******"
-    np.save('ny_depth', depth_dest)
-    np.save('ny_image', image_dest)
+    np.save(save_dir + 'ny_depth', depth_dest)
+    np.save(save_dir + 'ny_image', image_dest)
     print "Done"
 
 
@@ -173,9 +175,9 @@ def read_from_dir(dir, file_prefix):
         print "Depth shape: ", depth_dest.shape
         print "Max depth value: ", max(depth_dest[0])
 
-    np.save(save_dir + file_prefix + '_image_data.npy',image_dest)
-    np.save(save_dir + file_prefix + '_depth_data.npy',depth_dest)
-    np.save(save_dir + file_prefix + '_accel_data.npy',ad)
+    np.save(save_dir + file_prefix + 'image_data.npy',image_dest)
+    np.save(save_dir + file_prefix + 'depth_data.npy',depth_dest)
+    np.save(save_dir + file_prefix + 'accel_data.npy',ad)
 
 
 """
