@@ -77,7 +77,7 @@ class RedDepthNode(object):
             if (depths[i] < self.lowV):
                 depths[i] = 0
         print depths
-        toSend = "%d,%d,%d,%d,%d," % (depths[0], depths[1], depths[2], depths[3], depths[4])
+        toSend = "a,%d,b,%d,c,%d,d,%d,e,%d," % (depths[0], depths[1], depths[2], depths[3], depths[4])
         self.arduino.write(toSend) 
 
 

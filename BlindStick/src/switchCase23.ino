@@ -34,29 +34,36 @@ void loop() {
   if (Serial.available() > 0) {
 
     String str = Serial.readStringUntil(',');
-    analogWrite(5, str.toInt());
-    delay(7);
-    analogWrite(5, 0);
-
-    str = Serial.readStringUntil(',');
-    analogWrite(6, str.toInt());
-    delay(7);
-    analogWrite(6, 0);
-
-    str = Serial.readStringUntil(',');
-    analogWrite(9, str.toInt());
-    delay(7);
-    analogWrite(9, 0);
-
-    str = Serial.readStringUntil(',');
-    analogWrite(10, str.toInt());
-    delay(7);
-    analogWrite(10, 0);
-
-    str = Serial.readStringUntil(',');
-    analogWrite(11, str.toInt());
-    delay(7);
-    analogWrite(11, 0);
+    if (str.equals("a")) {
+      str = Serial.readStringUntil(',');
+      analogWrite(5, str.toInt());
+      delay(7);
+      analogWrite(5, 0);
+    }
+    if (str.equals("b")) {
+      str = Serial.readStringUntil(',');
+      analogWrite(6, str.toInt());
+      delay(7);
+      analogWrite(6, 0);
+    }
+    if (str.equals("c")) {
+      str = Serial.readStringUntil(',');
+      analogWrite(9, str.toInt());
+      delay(7);
+      analogWrite(9, 0);
+    }
+    if (str.equals("d")) {
+      str = Serial.readStringUntil(',');
+      analogWrite(10, str.toInt());
+      delay(7);
+      analogWrite(10, 0);
+    }
+    if (str.equals("e")) {
+      str = Serial.readStringUntil(',');
+      analogWrite(11, str.toInt());
+      delay(7);
+      analogWrite(11, 0);
+    }
     
     }
     //*int inByte = Serial.read();
@@ -112,4 +119,3 @@ void loop() {
     }*/
   //}
 }
-
