@@ -1,0 +1,23 @@
+In order to run the system in its current condition the following steps must be followed.
+  0. Plug in the camera and arduino
+  1. Upload switchCase23.ino to the arduino
+  2. roslaunch openni2_launch openni2.launch
+  3. Run MasterController.py
+
+FILES:
+  -switchCase23: The arduino side of motor control. Takes in a comma separated string 
+                 "a,x,b,x,c,x,d,x,e,x," where the x's are integers that control the
+                 motor intensity and the letters indicate which motor to be triggered.
+                 
+  -MasterController: A python script that allows the portions of the system to communicate.
+                     It subscribes to the camera/image/depth_raw (the depth topic on the camera).
+                     From the depth data 5 points from the center of the image vertically and evenly
+                     spaced horizontally are used to determine the motor intensity. This is then written
+                     to serial using the same format as in switchCase23.
+                     
+  -asus_image_depth: Used for data collection. Subscribes to the RGB and depth image from the camera.
+                     Also subscribes to the accelerometer data. All three time synchronized inputs are
+                     saved into a npz.
+                     
+  -accel_pub_sub: A simple ROS publisher that publishes time stamped motion information. The arduino file
+                  that works in tandem with this is AccelGyro.ino which can be found in the previous directory.
