@@ -5,7 +5,7 @@ In order to run the system in its current condition the following steps must be 
   3. Run MasterController.py
 
 FILES:
-  -switchCase23: The arduino side of motor control. Takes in a comma separated string 
+  -switchCase23: The arduino side of motor control. Takes in a comma separated string
                  "a,x,b,x,c,x,d,x,e,x," where the x's are integers that control the
                  motor intensity and the letters indicate which motor to be triggered.
                  
