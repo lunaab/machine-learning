@@ -13,6 +13,11 @@ for the purposes of The Depth Perception System(JMU 2017)
 Author: Nathan Johnson
 """
 
+image_x = 320
+image_y = 240
+image_chan = 3
+depth_x = 5
+depth_y = 5
 
 """
 read_from_mat takes in an ".h5" file (matlab)
@@ -48,9 +53,9 @@ def read_from_mat(filename):
     print "***********************\n"
     print "****Reading in data****"
 
-    image_dest = np.empty((images.shape[0], 320, 240, 3))
-    depth_resize = np.empty((depths.shape[0], 5, 5))
-    depth_dest = np.empty((depths.shape[0], 5*5))
+    image_dest = np.empty((images.shape[0], image_x, image_y, image_c))
+    depth_resize = np.empty((depths.shape[0], depth_x, depth_y))
+    depth_dest = np.empty((depths.shape[0], depth_x*depth_y))
 
     images = np.swapaxes(np.swapaxes(images, 1,3), 1,2)
 
@@ -61,14 +66,14 @@ def read_from_mat(filename):
     #Resize the data to fit the desired input shape (None, 320, 240, 3)
     i = 0
     for r in random_selections:
-        image_dest[i,...] = sci.imresize(images[r,:,:,:], (320,240,3))
+        image_dest[i,...] = sci.imresize(images[r,:,:,:], (image_x, image_y, image_c))
         i += 1
 
     #print random_selections.shape
     #print max(random_selections)
 
     #Normalize the image data by the maximum pixel size
-    image_dest = image_dest/255
+    image_dest = image_dest/255.0
 
     #sci.imsave("images/before_resize.jpg", depths[-1].reshape()
 
@@ -76,7 +81,7 @@ def read_from_mat(filename):
     print "****Resizing Depths****"
     i = 0
     for r in random_selections:
-        depth_resize[i,...] = sci.imresize(depths[r,:,:], (5,5), mode="F")
+        depth_resize[i,...] = sci.imresize(depths[r,:,:], (depth_x, depth_y), mode="F")
         depth_dest[i,...] = depth_resize[i].flatten()
         i += 1
 
@@ -126,8 +131,8 @@ def read_from_dir(dir, file_prefix):
     if debug:
         print id.shape
 
-    image_dest = np.empty((id.shape[0], 320, 240, 3))
-    depth_dest = np.empty((dd.shape[0], 5*5))
+    image_dest = np.empty((id.shape[0], image_x, image_y, image_c))
+    depth_dest = np.empty((dd.shape[0], depth_x*depth_y))
 
     random_selections = np.random.choice(id.shape[0], id.shape[0], replace=False)
 
@@ -135,7 +140,7 @@ def read_from_dir(dir, file_prefix):
 
     i = 0
     for r in random_selections:
-        image_dest[i,...] = sci.imresize(id[r,:,:,:], (320,240,3))
+        image_dest[i,...] = sci.imresize(id[r,:,:,:], (image_x, image_y, image_c))
         i += 1
 
     d_min = np.empty((5,5))
@@ -165,8 +170,8 @@ def read_from_dir(dir, file_prefix):
         depth_dest[i,...] = d_mins[i].flatten()
         i += 1
 
-    image_dest = image_dest/255
-    depth_dest = depth_dest/1000
+    image_dest = image_dest/255.0
+    depth_dest = depth_dest/1000.0
 
     depth_dest[depth_dest == 0] = float('nan')
 
